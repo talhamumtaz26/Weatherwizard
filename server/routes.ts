@@ -2,34 +2,41 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { locationSchema } from "@shared/schema";
 
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || process.env.OPENWEATHERMAP_API_KEY || "";
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY || "";
 
-if (!OPENWEATHER_API_KEY) {
-  console.warn("Warning: No OpenWeatherMap API key found. Set OPENWEATHER_API_KEY or OPENWEATHERMAP_API_KEY environment variable.");
+if (!WEATHER_API_KEY) {
+  console.warn("Warning: No WeatherAPI key found. Set WEATHER_API_KEY environment variable.");
 }
 
-function getWeatherIcon(iconCode: string): string {
-  const iconMap: { [key: string]: string } = {
-    '01d': 'fas fa-sun', // clear sky day
-    '01n': 'fas fa-moon', // clear sky night
-    '02d': 'fas fa-cloud-sun', // few clouds day
-    '02n': 'fas fa-cloud-moon', // few clouds night
-    '03d': 'fas fa-cloud', // scattered clouds
-    '03n': 'fas fa-cloud',
-    '04d': 'fas fa-cloud', // broken clouds
-    '04n': 'fas fa-cloud',
-    '09d': 'fas fa-cloud-rain', // shower rain
-    '09n': 'fas fa-cloud-rain',
-    '10d': 'fas fa-cloud-sun-rain', // rain day
-    '10n': 'fas fa-cloud-moon-rain', // rain night
-    '11d': 'fas fa-bolt', // thunderstorm
-    '11n': 'fas fa-bolt',
-    '13d': 'fas fa-snowflake', // snow
-    '13n': 'fas fa-snowflake',
-    '50d': 'fas fa-smog', // mist
-    '50n': 'fas fa-smog',
-  };
-  return iconMap[iconCode] || 'fas fa-cloud';
+function getWeatherIcon(conditionText: string, isDay: boolean): string {
+  const condition = conditionText.toLowerCase();
+  
+  if (condition.includes('sunny') || condition.includes('clear')) {
+    return isDay ? 'fas fa-sun' : 'fas fa-moon';
+  }
+  if (condition.includes('partly cloudy') || condition.includes('few clouds')) {
+    return isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon';
+  }
+  if (condition.includes('cloudy') || condition.includes('overcast')) {
+    return 'fas fa-cloud';
+  }
+  if (condition.includes('rain') || condition.includes('drizzle')) {
+    return isDay ? 'fas fa-cloud-sun-rain' : 'fas fa-cloud-rain';
+  }
+  if (condition.includes('thunder') || condition.includes('storm')) {
+    return 'fas fa-bolt';
+  }
+  if (condition.includes('snow') || condition.includes('blizzard')) {
+    return 'fas fa-snowflake';
+  }
+  if (condition.includes('mist') || condition.includes('fog') || condition.includes('haze')) {
+    return 'fas fa-smog';
+  }
+  if (condition.includes('wind')) {
+    return 'fas fa-wind';
+  }
+  
+  return isDay ? 'fas fa-sun' : 'fas fa-moon';
 }
 
 function getUVLevel(uvIndex: number): string {
@@ -82,122 +89,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      if (!OPENWEATHER_API_KEY) {
+      if (!WEATHER_API_KEY) {
         return res.status(500).json({ 
-          message: "OpenWeatherMap API key not configured. Please set OPENWEATHER_API_KEY environment variable." 
+          message: "WeatherAPI key not configured. Please set WEATHER_API_KEY environment variable." 
         });
       }
 
-      // Fetch current weather
-      const currentWeatherResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=imperial`
+      // Fetch current weather and forecast from WeatherAPI (includes everything we need)
+      const weatherResponse = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=10&aqi=yes&alerts=no`
       );
 
-      if (!currentWeatherResponse.ok) {
-        const errorData = await currentWeatherResponse.json();
-        return res.status(currentWeatherResponse.status).json({ 
-          message: `Weather API error: ${errorData.message || 'Failed to fetch weather data'}` 
+      if (!weatherResponse.ok) {
+        const errorData = await weatherResponse.json().catch(() => ({}));
+        return res.status(weatherResponse.status).json({ 
+          message: `Weather API error: ${errorData.error?.message || 'Failed to fetch weather data'}` 
         });
       }
 
-      const currentWeatherData = await currentWeatherResponse.json();
+      const weatherData = await weatherResponse.json();
+      const current = weatherData.current;
+      const location = weatherData.location;
+      const forecast = weatherData.forecast.forecastday;
 
-      // Fetch UV Index
-      const uvResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}`
-      );
+      // Format forecast data
+      const forecastData: any[] = forecast.map((day: any) => {
+        const date = day.date;
+        return {
+          date: date,
+          dayName: getDayName(date),
+          icon: getWeatherIcon(day.day.condition.text, true),
+          description: day.day.condition.text,
+          tempHigh: Math.round(day.day.maxtemp_f),
+          tempLow: Math.round(day.day.mintemp_f),
+          precipitationChance: Math.round(day.day.daily_chance_of_rain || day.day.daily_chance_of_snow || 0),
+        };
+      });
 
-      let uvIndex = 0;
-      if (uvResponse.ok) {
-        const uvData = await uvResponse.json();
-        uvIndex = uvData.value || 0;
-      }
-
-      // Fetch Air Quality
-      const aqResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}`
-      );
-
-      let aqi = 0;
-      if (aqResponse.ok) {
-        const aqData = await aqResponse.json();
-        aqi = aqData.list?.[0]?.main?.aqi ? aqData.list[0].main.aqi * 50 : 0; // Convert to US AQI scale
-      }
-
-      // Fetch 5-day forecast (we'll use this to create 10-day by extending pattern)
-      const forecastResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=imperial`
-      );
-
-      let forecastData = [];
-      if (forecastResponse.ok) {
-        const forecast = await forecastResponse.json();
-        const dailyForecasts = new Map();
-        
-        // Group by date and take noon forecast for each day
-        forecast.list.forEach((item: any) => {
-          const date = new Date(item.dt * 1000);
-          const dateStr = date.toISOString().split('T')[0];
-          const hour = date.getHours();
-          
-          if (hour === 12 || !dailyForecasts.has(dateStr)) { // Prefer noon data
-            dailyForecasts.set(dateStr, item);
-          }
-        });
-
-        forecastData = Array.from(dailyForecasts.values()).slice(0, 10).map((item: any) => {
-          const date = new Date(item.dt * 1000);
-          const dateStr = date.toISOString().split('T')[0];
-          
-          return {
-            date: dateStr,
-            dayName: getDayName(dateStr),
-            icon: getWeatherIcon(item.weather[0]?.icon || '01d'),
-            description: item.weather[0]?.main || 'Clear',
-            tempHigh: Math.round(item.main.temp_max),
-            tempLow: Math.round(item.main.temp_min),
-            precipitationChance: Math.round((item.pop || 0) * 100),
-          };
-        });
-
-        // Extend to 10 days by repeating pattern
-        while (forecastData.length < 10) {
-          const lastItem = forecastData[forecastData.length - 1];
-          const nextDate = new Date(lastItem.date);
-          nextDate.setDate(nextDate.getDate() + 1);
-          
-          forecastData.push({
-            ...lastItem,
-            date: nextDate.toISOString().split('T')[0],
-            dayName: getDayName(nextDate.toISOString().split('T')[0]),
-            tempHigh: lastItem.tempHigh + Math.floor(Math.random() * 6) - 3,
-            tempLow: lastItem.tempLow + Math.floor(Math.random() * 6) - 3,
-          });
-        }
-      }
-
-      const weatherData = {
+      const responseData = {
         current: {
-          location: `${currentWeatherData.name}, ${currentWeatherData.sys.country}`,
-          temperature: Math.round(currentWeatherData.main.temp),
-          feelsLike: Math.round(currentWeatherData.main.feels_like),
-          description: currentWeatherData.weather[0]?.main || 'Clear',
-          humidity: currentWeatherData.main.humidity,
-          pressure: (currentWeatherData.main.pressure * 0.02953).toFixed(2), // Convert hPa to inHg
-          visibility: Math.round((currentWeatherData.visibility || 10000) * 0.000621371), // Convert meters to miles
-          windSpeed: Math.round(currentWeatherData.wind?.speed || 0),
-          windDirection: getWindDirection(currentWeatherData.wind?.deg || 0),
-          uvIndex: Math.round(uvIndex),
-          uvLevel: getUVLevel(uvIndex),
-          aqi: Math.round(aqi),
-          aqiLevel: getAQILevel(aqi),
-          icon: getWeatherIcon(currentWeatherData.weather[0]?.icon || '01d'),
+          location: `${location.name}, ${location.country}`,
+          temperature: Math.round(current.temp_f),
+          feelsLike: Math.round(current.feelslike_f),
+          description: current.condition.text,
+          humidity: current.humidity,
+          pressure: (current.pressure_in).toFixed(2),
+          visibility: Math.round(current.vis_miles),
+          windSpeed: Math.round(current.wind_mph),
+          windDirection: current.wind_dir,
+          uvIndex: Math.round(current.uv),
+          uvLevel: getUVLevel(current.uv),
+          aqi: Math.round(current.air_quality?.['us-epa-index'] * 50 || 0), // Convert to US AQI scale
+          aqiLevel: getAQILevel(current.air_quality?.['us-epa-index'] * 50 || 0),
+          icon: getWeatherIcon(current.condition.text, current.is_day === 1),
           lastUpdated: new Date().toLocaleString(),
         },
         forecast: forecastData,
       };
 
-      res.json(weatherData);
+      res.json(responseData);
     } catch (error) {
       console.error('Weather API error:', error);
       res.status(500).json({ 
@@ -217,14 +167,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      if (!OPENWEATHER_API_KEY) {
+      if (!WEATHER_API_KEY) {
         return res.status(500).json({ 
-          message: "OpenWeatherMap API key not configured" 
+          message: "WeatherAPI key not configured" 
         });
       }
 
       const response = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city as string)}&limit=1&appid=${OPENWEATHER_API_KEY}`
+        `https://api.weatherapi.com/v1/search.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city as string)}`
       );
 
       if (!response.ok) {

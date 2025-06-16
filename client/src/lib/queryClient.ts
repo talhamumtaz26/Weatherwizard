@@ -29,7 +29,24 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    let url = queryKey[0] as string;
+    
+    // If there are additional parameters in the queryKey, add them as query parameters
+    if (queryKey.length > 1) {
+      const params = new URLSearchParams();
+      for (let i = 1; i < queryKey.length; i++) {
+        if (queryKey[i] !== undefined && queryKey[i] !== null) {
+          // For weather API, we expect lat and lon parameters
+          if (i === 1) params.append('lat', String(queryKey[i]));
+          if (i === 2) params.append('lon', String(queryKey[i]));
+        }
+      }
+      if (params.toString()) {
+        url += '?' + params.toString();
+      }
+    }
+
+    const res = await fetch(url, {
       credentials: "include",
     });
 
