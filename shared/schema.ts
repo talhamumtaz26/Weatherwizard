@@ -16,7 +16,7 @@ export const currentWeatherSchema = z.object({
   feelsLike: z.number(),
   description: z.string(),
   humidity: z.number(),
-  pressure: z.number(),
+  pressure: z.string(),
   visibility: z.number(),
   windSpeed: z.number(),
   windDirection: z.string(),

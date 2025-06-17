@@ -311,38 +311,7 @@ export function SettingsPanel({
                 </div>
               </Card>
 
-              {/* Popular Cities */}
-              <div className="mt-6">
-                <Label className="text-sm font-medium text-gray-700 mb-3 block">
-                  Popular Cities
-                </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {[
-                    { name: "New York", country: "USA", lat: 40.7128, lon: -74.0060 },
-                    { name: "London", country: "UK", lat: 51.5074, lon: -0.1278 },
-                    { name: "Tokyo", country: "Japan", lat: 35.6762, lon: 139.6503 },
-                    { name: "Paris", country: "France", lat: 48.8566, lon: 2.3522 },
-                    { name: "Sydney", country: "Australia", lat: -33.8688, lon: 151.2093 },
-                  ].map((city) => (
-                    <Button
-                      key={city.name}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        onLocationSelect(city.lat, city.lon, city.name);
-                        toast({
-                          title: "Location Updated",
-                          description: `Weather updated for ${city.name}, ${city.country}`,
-                        });
-                      }}
-                      className="justify-start text-left text-xs h-8"
-                    >
-                      <MapPin className="h-3 w-3 mr-2" />
-                      {city.name}, {city.country}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+
             </div>
           </motion.div>
         </>
