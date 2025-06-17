@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { locationSchema } from "@shared/schema";
+import { storage } from "./storage";
 
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY || "";
 
@@ -95,6 +96,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Check cache first
+      const cachedWeather = await storage.getCachedWeather(parseFloat(lat as string), parseFloat(lon as string));
+      if (cachedWeather) {
+        return res.json(JSON.parse(cachedWeather.weatherData));
+      }
+
       // Fetch current weather and forecast from WeatherAPI (includes everything we need)
       const weatherResponse = await fetch(
         `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=10&aqi=yes&alerts=no`
@@ -146,6 +153,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         forecast: forecastData,
       };
+
+      // Cache the weather data
+      await storage.cacheWeatherData({
+        lat: parseFloat(lat as string),
+        lon: parseFloat(lon as string),
+        weatherData: JSON.stringify(responseData),
+      });
 
       res.json(responseData);
     } catch (error) {
@@ -203,6 +217,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Location API error:', error);
       res.status(500).json({ 
         message: "Failed to fetch location data" 
+      });
+    }
+  });
+
+  // User management endpoints
+  app.post("/api/users", async (req, res) => {
+    try {
+      const userData = req.body;
+      const user = await storage.createUser(userData);
+      res.json(user);
+    } catch (error) {
+      console.error('Create user error:', error);
+      res.status(500).json({ 
+        message: "Failed to create user" 
+      });
+    }
+  });
+
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await storage.getUser(parseInt(id));
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error('Get user error:', error);
+      res.status(500).json({ 
+        message: "Failed to fetch user" 
+      });
+    }
+  });
+
+  app.put("/api/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const user = await storage.updateUser(parseInt(id), updates);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error('Update user error:', error);
+      res.status(500).json({ 
+        message: "Failed to update user" 
+      });
+    }
+  });
+
+  // User locations endpoints
+  app.get("/api/users/:id/locations", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const locations = await storage.getUserLocations(parseInt(id));
+      res.json(locations);
+    } catch (error) {
+      console.error('Get user locations error:', error);
+      res.status(500).json({ 
+        message: "Failed to fetch user locations" 
+      });
+    }
+  });
+
+  app.post("/api/users/:id/locations", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const locationData = { ...req.body, userId: parseInt(id) };
+      const location = await storage.addUserLocation(locationData);
+      res.json(location);
+    } catch (error) {
+      console.error('Add user location error:', error);
+      res.status(500).json({ 
+        message: "Failed to add location" 
+      });
+    }
+  });
+
+  app.put("/api/users/:userId/locations/:locationId/default", async (req, res) => {
+    try {
+      const { userId, locationId } = req.params;
+      await storage.setDefaultLocation(parseInt(userId), parseInt(locationId));
+      res.json({ message: "Default location updated" });
+    } catch (error) {
+      console.error('Set default location error:', error);
+      res.status(500).json({ 
+        message: "Failed to set default location" 
+      });
+    }
+  });
+
+  app.delete("/api/locations/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteUserLocation(parseInt(id));
+      res.json({ message: "Location deleted" });
+    } catch (error) {
+      console.error('Delete location error:', error);
+      res.status(500).json({ 
+        message: "Failed to delete location" 
+      });
+    }
+  });
+
+  // Cache management endpoint
+  app.delete("/api/cache/clear", async (req, res) => {
+    try {
+      await storage.clearOldCache();
+      res.json({ message: "Cache cleared" });
+    } catch (error) {
+      console.error('Clear cache error:', error);
+      res.status(500).json({ 
+        message: "Failed to clear cache" 
       });
     }
   });
