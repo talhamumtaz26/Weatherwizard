@@ -5,19 +5,28 @@ import type { CurrentWeather } from "@shared/schema";
 
 interface WeatherHeaderProps {
   currentWeather: CurrentWeather;
+  onSettingsClick?: () => void;
+  onLocationClick?: () => void;
+  temperatureSymbol?: string;
 }
 
-export function WeatherHeader({ currentWeather }: WeatherHeaderProps) {
+export function WeatherHeader({ 
+  currentWeather, 
+  onSettingsClick, 
+  onLocationClick, 
+  temperatureSymbol = "°F" 
+}: WeatherHeaderProps) {
   return (
     <div className="weather-gradient text-white px-4 py-6 md:px-6 md:py-8">
       <div className="max-w-6xl mx-auto">
         {/* Location and Settings */}
         <div className="flex justify-between items-center mb-6">
           <motion.div 
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            onClick={onLocationClick}
           >
             <i className="fas fa-map-marker-alt text-lg"></i>
             <span className="text-lg font-medium">{currentWeather.location}</span>
@@ -25,6 +34,7 @@ export function WeatherHeader({ currentWeather }: WeatherHeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
+            onClick={onSettingsClick}
             className="p-2 rounded-full glass-morphism hover:bg-white/20 transition-colors text-white hover:text-white"
           >
             <Settings className="h-5 w-5" />
