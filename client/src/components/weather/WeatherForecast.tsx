@@ -4,9 +4,10 @@ import type { ForecastDay } from "@shared/schema";
 
 interface WeatherForecastProps {
   forecast: ForecastDay[];
+  temperatureSymbol?: string;
 }
 
-export function WeatherForecast({ forecast }: WeatherForecastProps) {
+export function WeatherForecast({ forecast, temperatureSymbol = "°F" }: WeatherForecastProps) {
   return (
     <motion.div 
       className="bg-white rounded-2xl p-6 shadow-sm mb-8"
@@ -45,8 +46,8 @@ export function WeatherForecast({ forecast }: WeatherForecastProps) {
                 <span>{day.precipitationChance}%</span>
               </div>
               <div className="flex items-center space-x-2 min-w-[80px] justify-end">
-                <span className="text-sm font-medium text-gray-800">{day.tempHigh}°</span>
-                <span className="text-sm text-gray-500">{day.tempLow}°</span>
+                <span className="text-sm font-medium text-gray-800">{day.tempHigh}{temperatureSymbol}</span>
+                <span className="text-sm text-gray-500">{day.tempLow}{temperatureSymbol}</span>
               </div>
             </div>
           </motion.div>

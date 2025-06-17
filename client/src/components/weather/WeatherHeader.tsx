@@ -60,7 +60,7 @@ export function WeatherHeader({
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <span className="text-6xl md:text-7xl font-light">{currentWeather.temperature}</span>
-            <span className="text-2xl font-light">°F</span>
+            <span className="text-2xl font-light">{temperatureSymbol}</span>
           </motion.div>
           
           {/* Weather Description */}
@@ -70,7 +70,7 @@ export function WeatherHeader({
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <p className="text-xl font-medium opacity-90 mb-2">{currentWeather.description}</p>
-            <p className="text-sm opacity-75">Feels like {currentWeather.feelsLike}°F</p>
+            <p className="text-sm opacity-75">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
           </motion.div>
         </div>
 

@@ -4,9 +4,10 @@ import type { CurrentWeather } from "@shared/schema";
 
 interface WeatherDetailsGridProps {
   currentWeather: CurrentWeather;
+  temperatureSymbol?: string;
 }
 
-export function WeatherDetailsGrid({ currentWeather }: WeatherDetailsGridProps) {
+export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F" }: WeatherDetailsGridProps) {
   const getUVColor = (uvIndex: number) => {
     if (uvIndex <= 2) return "text-green-600 bg-green-100";
     if (uvIndex <= 5) return "text-yellow-600 bg-yellow-100";
@@ -56,7 +57,7 @@ export function WeatherDetailsGrid({ currentWeather }: WeatherDetailsGridProps) 
       label: "Comfortable",
       colorClass: "text-blue-600 bg-blue-100",
       progressWidth: currentWeather.humidity,
-      description: `The dew point is ${Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}° right now`,
+      description: `The dew point is ${Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}${temperatureSymbol} right now`,
     },
     {
       title: "Pressure",
