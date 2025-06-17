@@ -10,11 +10,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+import type { TemperatureUnit, SpeedUnit, DistanceUnit } from "@/hooks/useTemperatureUnits";
+
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  currentUnits: "fahrenheit" | "celsius";
-  onUnitsChange: (units: "fahrenheit" | "celsius") => void;
+  temperatureUnits: TemperatureUnit;
+  speedUnits: SpeedUnit;
+  distanceUnits: DistanceUnit;
+  onTemperatureUnitsChange: (units: TemperatureUnit) => void;
+  onSpeedUnitsChange: (units: SpeedUnit) => void;
+  onDistanceUnitsChange: (units: DistanceUnit) => void;
   onLocationSelect: (lat: number, lon: number, city: string) => void;
 }
 

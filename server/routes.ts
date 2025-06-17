@@ -149,6 +149,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           aqi: Math.round(current.air_quality?.['us-epa-index'] * 50 || 0), // Convert to US AQI scale
           aqiLevel: getAQILevel(current.air_quality?.['us-epa-index'] * 50 || 0),
           icon: getWeatherIcon(current.condition.text, current.is_day === 1),
+          sunrise: forecast[0]?.astro?.sunrise || "6:00 AM",
+          sunset: forecast[0]?.astro?.sunset || "6:00 PM",
+          isDay: current.is_day === 1,
           lastUpdated: new Date().toLocaleString(),
         },
         forecast: forecastData,

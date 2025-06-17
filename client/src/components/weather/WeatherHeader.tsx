@@ -16,7 +16,9 @@ export function WeatherHeader({
   currentWeather, 
   onSettingsClick, 
   onLocationClick, 
-  temperatureSymbol = "°F" 
+  temperatureSymbol = "°F",
+  speedSymbol = "mph",
+  distanceSymbol = "mi"
 }: WeatherHeaderProps) {
   return (
     <div className="weather-gradient text-white px-4 py-6 md:px-6 md:py-8">
@@ -91,12 +93,12 @@ export function WeatherHeader({
           <div className="glass-morphism rounded-xl p-4 text-center">
             <i className="fas fa-wind text-green-300 text-lg mb-2"></i>
             <p className="text-xs opacity-75">Wind</p>
-            <p className="text-lg font-semibold">{currentWeather.windSpeed} mph</p>
+            <p className="text-lg font-semibold">{currentWeather.windSpeed} {speedSymbol}</p>
           </div>
           <div className="glass-morphism rounded-xl p-4 text-center">
             <i className="fas fa-eye text-purple-300 text-lg mb-2"></i>
             <p className="text-xs opacity-75">Visibility</p>
-            <p className="text-lg font-semibold">{currentWeather.visibility} mi</p>
+            <p className="text-lg font-semibold">{currentWeather.visibility} {distanceSymbol}</p>
           </div>
           <div className="glass-morphism rounded-xl p-4 text-center">
             <i className="fas fa-thermometer-half text-orange-300 text-lg mb-2"></i>

@@ -5,9 +5,11 @@ import type { CurrentWeather } from "@shared/schema";
 interface WeatherDetailsGridProps {
   currentWeather: CurrentWeather;
   temperatureSymbol?: string;
+  speedSymbol?: string;
+  distanceSymbol?: string;
 }
 
-export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F" }: WeatherDetailsGridProps) {
+export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", speedSymbol = "mph", distanceSymbol = "mi" }: WeatherDetailsGridProps) {
   const getUVColor = (uvIndex: number) => {
     if (uvIndex <= 2) return "text-green-600 bg-green-100";
     if (uvIndex <= 5) return "text-yellow-600 bg-yellow-100";
@@ -72,7 +74,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F" }
       title: "Visibility",
       icon: "fas fa-eye text-indigo-500",
       value: currentWeather.visibility,
-      label: "miles",
+      label: distanceSymbol,
       colorClass: "text-indigo-600 bg-indigo-100",
       description: "Perfectly clear view",
     },
@@ -80,7 +82,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F" }
       title: "Wind",
       icon: "fas fa-wind text-teal-500",
       value: currentWeather.windSpeed,
-      label: "mph",
+      label: speedSymbol,
       colorClass: "text-teal-600 bg-teal-100",
       windDirection: currentWeather.windDirection,
       description: null,
