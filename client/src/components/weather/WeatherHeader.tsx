@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Settings } from "lucide-react";
+import { Settings, Sunrise, Sunset } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CurrentWeather } from "@shared/schema";
 
@@ -104,6 +104,16 @@ export function WeatherHeader({
             <i className="fas fa-thermometer-half text-orange-300 text-lg mb-2"></i>
             <p className="text-xs opacity-75">Pressure</p>
             <p className="text-lg font-semibold">{currentWeather.pressure}</p>
+          </div>
+          <div className="glass-morphism rounded-xl p-4 text-center">
+            <Sunrise className="h-5 w-5 text-yellow-300 mx-auto mb-2" />
+            <p className="text-xs opacity-75">Sunrise</p>
+            <p className="text-lg font-semibold">{currentWeather.sunrise}</p>
+          </div>
+          <div className="glass-morphism rounded-xl p-4 text-center">
+            <Sunset className="h-5 w-5 text-orange-300 mx-auto mb-2" />
+            <p className="text-xs opacity-75">Sunset</p>
+            <p className="text-lg font-semibold">{currentWeather.sunset}</p>
           </div>
         </motion.div>
       </div>

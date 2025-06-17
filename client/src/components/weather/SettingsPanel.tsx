@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, MapPin, Thermometer, Plus } from "lucide-react";
+import { X, Search, MapPin, Thermometer, Plus, Wind, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,8 +27,12 @@ interface SettingsPanelProps {
 export function SettingsPanel({ 
   isOpen, 
   onClose, 
-  currentUnits, 
-  onUnitsChange,
+  temperatureUnits,
+  speedUnits,
+  distanceUnits,
+  onTemperatureUnitsChange,
+  onSpeedUnitsChange,
+  onDistanceUnitsChange,
   onLocationSelect 
 }: SettingsPanelProps) {
   const [searchCity, setSearchCity] = useState("");
@@ -66,12 +70,30 @@ export function SettingsPanel({
     }
   };
 
-  const handleUnitsToggle = (checked: boolean) => {
+  const handleTemperatureUnitsToggle = (checked: boolean) => {
     const newUnits = checked ? "celsius" : "fahrenheit";
-    onUnitsChange(newUnits);
+    onTemperatureUnitsChange(newUnits);
     toast({
       title: "Units Changed",
       description: `Temperature units changed to ${newUnits === "celsius" ? "Celsius" : "Fahrenheit"}`,
+    });
+  };
+
+  const handleSpeedUnitsToggle = (checked: boolean) => {
+    const newUnits = checked ? "kmh" : "mph";
+    onSpeedUnitsChange(newUnits);
+    toast({
+      title: "Units Changed",
+      description: `Speed units changed to ${newUnits === "kmh" ? "km/h" : "mph"}`,
+    });
+  };
+
+  const handleDistanceUnitsToggle = (checked: boolean) => {
+    const newUnits = checked ? "km" : "miles";
+    onDistanceUnitsChange(newUnits);
+    toast({
+      title: "Units Changed",
+      description: `Distance units changed to ${newUnits === "km" ? "kilometers" : "miles"}`,
     });
   };
 
@@ -123,15 +145,69 @@ export function SettingsPanel({
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-sm ${currentUnits === "fahrenheit" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${temperatureUnits === "fahrenheit" ? "font-medium" : "text-gray-400"}`}>
                       °F
                     </span>
                     <Switch
-                      checked={currentUnits === "celsius"}
-                      onCheckedChange={handleUnitsToggle}
+                      checked={temperatureUnits === "celsius"}
+                      onCheckedChange={handleTemperatureUnitsToggle}
                     />
-                    <span className={`text-sm ${currentUnits === "celsius" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${temperatureUnits === "celsius" ? "font-medium" : "text-gray-400"}`}>
                       °C
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Speed Units */}
+              <Card className="p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Wind className="h-5 w-5 text-green-500" />
+                    <div>
+                      <Label className="text-sm font-medium">Speed Units</Label>
+                      <p className="text-xs text-gray-500">
+                        Choose between mph and km/h
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-sm ${speedUnits === "mph" ? "font-medium" : "text-gray-400"}`}>
+                      mph
+                    </span>
+                    <Switch
+                      checked={speedUnits === "kmh"}
+                      onCheckedChange={handleSpeedUnitsToggle}
+                    />
+                    <span className={`text-sm ${speedUnits === "kmh" ? "font-medium" : "text-gray-400"}`}>
+                      km/h
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Distance Units */}
+              <Card className="p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Eye className="h-5 w-5 text-purple-500" />
+                    <div>
+                      <Label className="text-sm font-medium">Distance Units</Label>
+                      <p className="text-xs text-gray-500">
+                        Choose between miles and kilometers
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-sm ${distanceUnits === "miles" ? "font-medium" : "text-gray-400"}`}>
+                      mi
+                    </span>
+                    <Switch
+                      checked={distanceUnits === "km"}
+                      onCheckedChange={handleDistanceUnitsToggle}
+                    />
+                    <span className={`text-sm ${distanceUnits === "km" ? "font-medium" : "text-gray-400"}`}>
+                      km
                     </span>
                   </div>
                 </div>

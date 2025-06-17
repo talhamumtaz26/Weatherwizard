@@ -97,8 +97,15 @@ export default function Weather() {
     );
   }
 
+  const getDynamicBackground = () => {
+    if (!convertedWeatherData?.current?.isDay) {
+      return "min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900";
+    }
+    return "min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600";
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600">
+    <div className={getDynamicBackground()}>
       <WeatherHeader 
         currentWeather={convertedWeatherData.current} 
         onSettingsClick={() => setIsSettingsOpen(true)}
