@@ -74,7 +74,15 @@ export function WeatherHeader({
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <p className="text-xl font-medium opacity-90 mb-2">{currentWeather.description}</p>
-            <p className="text-sm opacity-75">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
+            <p className="text-sm opacity-75 mb-1">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
+            <p className="text-xs opacity-60">
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
           </motion.div>
         </div>
 
@@ -105,16 +113,7 @@ export function WeatherHeader({
             <p className="text-xs opacity-75">Pressure</p>
             <p className="text-lg font-semibold">{currentWeather.pressure}</p>
           </div>
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <Sunrise className="h-5 w-5 text-yellow-300 mx-auto mb-2" />
-            <p className="text-xs opacity-75">Sunrise</p>
-            <p className="text-lg font-semibold">{currentWeather.sunrise}</p>
-          </div>
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <Sunset className="h-5 w-5 text-orange-300 mx-auto mb-2" />
-            <p className="text-xs opacity-75">Sunset</p>
-            <p className="text-lg font-semibold">{currentWeather.sunset}</p>
-          </div>
+
         </motion.div>
       </div>
     </div>

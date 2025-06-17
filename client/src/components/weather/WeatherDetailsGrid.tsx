@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Droplets } from "lucide-react";
 import type { CurrentWeather } from "@shared/schema";
+import { Progress } from "@/components/ui/progress";
 
 interface WeatherDetailsGridProps {
   currentWeather: CurrentWeather;
@@ -19,10 +20,21 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
   };
 
   const getAQIColor = (aqi: number) => {
-    if (aqi <= 50) return "text-green-600 bg-green-100";
-    if (aqi <= 100) return "text-yellow-600 bg-yellow-100";
-    if (aqi <= 150) return "text-orange-600 bg-orange-100";
-    return "text-red-600 bg-red-100";
+    if (aqi <= 50) return { text: "text-green-600", bg: "bg-green-100", color: "#10b981" };
+    if (aqi <= 100) return { text: "text-yellow-600", bg: "bg-yellow-100", color: "#f59e0b" };
+    if (aqi <= 150) return { text: "text-orange-600", bg: "bg-orange-100", color: "#f97316" };
+    if (aqi <= 200) return { text: "text-red-600", bg: "bg-red-100", color: "#ef4444" };
+    if (aqi <= 300) return { text: "text-purple-600", bg: "bg-purple-100", color: "#8b5cf6" };
+    return { text: "text-red-800", bg: "bg-red-200", color: "#dc2626" };
+  };
+
+  const getAQIPosition = (aqi: number) => {
+    if (aqi <= 50) return 10;
+    if (aqi <= 100) return 30;
+    if (aqi <= 150) return 50;
+    if (aqi <= 200) return 70;
+    if (aqi <= 300) return 85;
+    return 95;
   };
 
   const getUVWidth = (uvIndex: number) => {
@@ -48,8 +60,11 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       icon: "fas fa-leaf text-green-500",
       value: currentWeather.aqi,
       label: currentWeather.aqiLevel,
-      colorClass: getAQIColor(currentWeather.aqi),
+      colorClass: `${getAQIColor(currentWeather.aqi).text} ${getAQIColor(currentWeather.aqi).bg}`,
       progressWidth: getAQIWidth(currentWeather.aqi),
+      showAQIBar: true,
+      aqiPosition: getAQIPosition(currentWeather.aqi),
+      aqiColor: getAQIColor(currentWeather.aqi),
       description: "Air quality is satisfactory for most people",
     },
     {
