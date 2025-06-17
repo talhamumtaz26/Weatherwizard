@@ -6,7 +6,7 @@ import { WeatherForecast } from "@/components/weather/WeatherForecast";
 import { LoadingSpinner } from "@/components/weather/LoadingSpinner";
 import { SettingsPanel } from "@/components/weather/SettingsPanel";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useTemperatureUnits } from "@/hooks/useTemperatureUnits";
+import { useWeatherUnits } from "@/hooks/useTemperatureUnits";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type { WeatherData } from "@shared/schema";
@@ -15,7 +15,20 @@ export default function Weather() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null);
   const { location: gpsLocation, loading: locationLoading, error: locationError } = useGeolocation();
-  const { units, updateUnits, convertTemperature, getTemperatureSymbol } = useTemperatureUnits();
+  const { 
+    temperatureUnits, 
+    speedUnits, 
+    distanceUnits,
+    updateTemperatureUnits, 
+    updateSpeedUnits,
+    updateDistanceUnits,
+    convertTemperature, 
+    convertSpeed,
+    convertDistance,
+    getTemperatureSymbol,
+    getSpeedSymbol,
+    getDistanceSymbol
+  } = useWeatherUnits();
   
   // Use manual location if set, otherwise fall back to GPS location
   const location = manualLocation || gpsLocation;
@@ -37,13 +50,15 @@ export default function Weather() {
     setIsSettingsOpen(true);
   };
 
-  // Convert weather data to use selected temperature units
+  // Convert weather data to use selected units
   const convertedWeatherData = weatherData ? {
     ...weatherData,
     current: {
       ...weatherData.current,
       temperature: convertTemperature(weatherData.current.temperature),
       feelsLike: convertTemperature(weatherData.current.feelsLike),
+      windSpeed: convertSpeed(weatherData.current.windSpeed),
+      visibility: convertDistance(weatherData.current.visibility),
     },
     forecast: weatherData.forecast.map(day => ({
       ...day,
@@ -89,12 +104,16 @@ export default function Weather() {
         onSettingsClick={() => setIsSettingsOpen(true)}
         onLocationClick={handleLocationClick}
         temperatureSymbol={getTemperatureSymbol()}
+        speedSymbol={getSpeedSymbol()}
+        distanceSymbol={getDistanceSymbol()}
       />
       
       <div className="max-w-6xl mx-auto px-4 py-6 md:px-6">
         <WeatherDetailsGrid 
           currentWeather={convertedWeatherData.current} 
           temperatureSymbol={getTemperatureSymbol()}
+          speedSymbol={getSpeedSymbol()}
+          distanceSymbol={getDistanceSymbol()}
         />
         <WeatherForecast 
           forecast={convertedWeatherData.forecast} 
@@ -112,8 +131,12 @@ export default function Weather() {
       <SettingsPanel
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        currentUnits={units}
-        onUnitsChange={updateUnits}
+        temperatureUnits={temperatureUnits}
+        speedUnits={speedUnits}
+        distanceUnits={distanceUnits}
+        onTemperatureUnitsChange={updateTemperatureUnits}
+        onSpeedUnitsChange={updateSpeedUnits}
+        onDistanceUnitsChange={updateDistanceUnits}
         onLocationSelect={handleLocationSelect}
       />
     </div>

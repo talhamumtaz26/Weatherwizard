@@ -8,6 +8,8 @@ interface WeatherHeaderProps {
   onSettingsClick?: () => void;
   onLocationClick?: () => void;
   temperatureSymbol?: string;
+  speedSymbol?: string;
+  distanceSymbol?: string;
 }
 
 export function WeatherHeader({ 

@@ -25,6 +25,9 @@ export const currentWeatherSchema = z.object({
   aqi: z.number(),
   aqiLevel: z.string(),
   icon: z.string(),
+  sunrise: z.string(),
+  sunset: z.string(),
+  isDay: z.boolean(),
   lastUpdated: z.string(),
 });
 
