@@ -96,10 +96,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Check cache first
-      const cachedWeather = await storage.getCachedWeather(parseFloat(lat as string), parseFloat(lon as string));
-      if (cachedWeather) {
-        return res.json(JSON.parse(cachedWeather.weatherData));
+      // Check cache first (skip if database issues)
+      try {
+        const cachedWeather = await storage.getCachedWeather(parseFloat(lat as string), parseFloat(lon as string));
+        if (cachedWeather) {
+          return res.json(JSON.parse(cachedWeather.weatherData));
+        }
+      } catch (cacheError) {
+        console.warn('Cache lookup failed, proceeding with API call:', cacheError);
       }
 
       // Fetch current weather and forecast from WeatherAPI (includes everything we need)
@@ -152,17 +156,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sunrise: forecast[0]?.astro?.sunrise || "6:00 AM",
           sunset: forecast[0]?.astro?.sunset || "6:00 PM",
           isDay: current.is_day === 1,
+          rainMm: current.precip_mm || 0,
+          dewPoint: Math.round(current.dewpoint_f || (current.temp_f - ((100 - current.humidity) / 5))),
           lastUpdated: new Date().toLocaleString(),
         },
         forecast: forecastData,
       };
 
-      // Cache the weather data
-      await storage.cacheWeatherData({
-        lat: parseFloat(lat as string),
-        lon: parseFloat(lon as string),
-        weatherData: JSON.stringify(responseData),
-      });
+      // Cache the weather data (skip if database issues)
+      try {
+        await storage.cacheWeatherData({
+          lat: parseFloat(lat as string),
+          lon: parseFloat(lon as string),
+          weatherData: JSON.stringify(responseData),
+        });
+      } catch (cacheError) {
+        console.warn('Failed to cache weather data:', cacheError);
+      }
 
       res.json(responseData);
     } catch (error) {

@@ -28,6 +28,8 @@ export const currentWeatherSchema = z.object({
   sunrise: z.string(),
   sunset: z.string(),
   isDay: z.boolean(),
+  rainMm: z.number(),
+  dewPoint: z.number(),
   lastUpdated: z.string(),
 });
 

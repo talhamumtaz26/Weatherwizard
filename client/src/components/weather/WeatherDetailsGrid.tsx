@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowUp, Droplets } from "lucide-react";
 import type { CurrentWeather } from "@shared/schema";
-import { Progress } from "@/components/ui/progress";
 
 interface WeatherDetailsGridProps {
   currentWeather: CurrentWeather;
@@ -41,10 +40,6 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
     return Math.min((uvIndex / 12) * 100, 100);
   };
 
-  const getAQIWidth = (aqi: number) => {
-    return Math.min((aqi / 300) * 100, 100);
-  };
-
   const cards = [
     {
       title: "UV Index",
@@ -61,7 +56,6 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       value: currentWeather.aqi,
       label: currentWeather.aqiLevel,
       colorClass: `${getAQIColor(currentWeather.aqi).text} ${getAQIColor(currentWeather.aqi).bg}`,
-      progressWidth: getAQIWidth(currentWeather.aqi),
       showAQIBar: true,
       aqiPosition: getAQIPosition(currentWeather.aqi),
       aqiColor: getAQIColor(currentWeather.aqi),
@@ -74,7 +68,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       label: "Comfortable",
       colorClass: "text-blue-600 bg-blue-100",
       progressWidth: currentWeather.humidity,
-      description: `The dew point is ${Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}${temperatureSymbol} right now`,
+      description: `The dew point is ${currentWeather.dewPoint || Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}${temperatureSymbol} right now`,
     },
     {
       title: "Pressure",
@@ -102,10 +96,26 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       windDirection: currentWeather.windDirection,
       description: null,
     },
+    {
+      title: "Rain",
+      icon: "fas fa-cloud-rain text-blue-600",
+      value: currentWeather.rainMm || 0,
+      label: "mm",
+      colorClass: "text-blue-600 bg-blue-100",
+      description: (currentWeather.rainMm || 0) > 0 ? "Precipitation detected" : "No precipitation expected",
+    },
+    {
+      title: "Dew Point",
+      icon: "fas fa-droplet text-cyan-500",
+      value: currentWeather.dewPoint || Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5)),
+      label: temperatureSymbol,
+      colorClass: "text-cyan-600 bg-cyan-100",
+      description: "Comfortable level",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
       {cards.map((card, index) => (
         <motion.div
           key={card.title}
@@ -126,7 +136,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
             </div>
           </div>
           
-          {card.progressWidth !== undefined && (
+          {card.progressWidth !== undefined && !card.showAQIBar && (
             <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
               <div 
                 className={`h-2 rounded-full transition-all duration-500 ${card.colorClass.split(' ')[0].replace('text-', 'bg-')}`}
@@ -134,23 +144,43 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
               ></div>
             </div>
           )}
+
+          {card.showAQIBar && (
+            <div className="w-full mb-2">
+              <div className="relative w-full h-3 rounded-full overflow-hidden" style={{
+                background: 'linear-gradient(to right, #10b981 0%, #10b981 20%, #f59e0b 20%, #f59e0b 40%, #f97316 40%, #f97316 60%, #ef4444 60%, #ef4444 80%, #8b5cf6 80%, #8b5cf6 100%)'
+              }}>
+                <div 
+                  className="absolute top-0 w-3 h-3 bg-white border-2 rounded-full shadow-md transition-all duration-500"
+                  style={{ 
+                    left: `${card.aqiPosition}%`,
+                    borderColor: card.aqiColor?.color,
+                    transform: 'translateX(-50%)'
+                  }}
+                />
+              </div>
+            </div>
+          )}
           
           {card.showArrow && (
             <div className="flex items-center text-sm text-gray-600">
               <ArrowUp className="h-4 w-4 text-green-500 mr-1" />
-              <span>Rising</span>
+              <span>Steady</span>
             </div>
           )}
           
           {card.windDirection && (
             <div className="flex items-center text-sm text-gray-600">
-              <i className="fas fa-compass text-gray-400 mr-2"></i>
-              <span>{card.windDirection}</span>
+              <ArrowUp 
+                className="h-4 w-4 text-teal-500 mr-1 transition-transform duration-300" 
+                style={{ transform: `rotate(${card.windDirection === 'N' ? 0 : card.windDirection === 'NE' ? 45 : card.windDirection === 'E' ? 90 : card.windDirection === 'SE' ? 135 : card.windDirection === 'S' ? 180 : card.windDirection === 'SW' ? 225 : card.windDirection === 'W' ? 270 : 315}deg)` }}
+              />
+              <span>From {card.windDirection}</span>
             </div>
           )}
           
           {card.description && (
-            <p className="text-xs text-gray-600">{card.description}</p>
+            <p className="text-xs text-gray-500 mt-2">{card.description}</p>
           )}
         </motion.div>
       ))}
