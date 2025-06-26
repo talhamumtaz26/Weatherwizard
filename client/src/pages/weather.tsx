@@ -202,7 +202,7 @@ export default function Weather() {
         distanceSymbol={getDistanceSymbol()}
       />
       
-      <div className="max-w-6xl mx-auto px-4 py-6 md:px-6">
+      <div className="max-w-6xl mx-auto px-4 py-6 md:px-6 text-white">
         <WeatherDetailsGrid 
           currentWeather={convertedWeatherData.current} 
           temperatureSymbol={getTemperatureSymbol()}

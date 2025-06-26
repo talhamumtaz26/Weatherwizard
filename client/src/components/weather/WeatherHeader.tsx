@@ -21,7 +21,7 @@ export function WeatherHeader({
   distanceSymbol = "mi"
 }: WeatherHeaderProps) {
   return (
-    <div className="weather-gradient text-white px-4 py-6 md:px-6 md:py-8">
+    <div className="text-white px-4 py-6 md:px-6 md:py-8">
       <div className="max-w-6xl mx-auto">
         {/* Location and Settings */}
         <div className="flex justify-between items-center mb-6">
@@ -86,35 +86,7 @@ export function WeatherHeader({
           </motion.div>
         </div>
 
-        {/* Today's Highlights Quick View */}
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <i className="fas fa-tint text-blue-300 text-lg mb-2"></i>
-            <p className="text-xs opacity-75">Humidity</p>
-            <p className="text-lg font-semibold">{currentWeather.humidity}%</p>
-          </div>
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <i className="fas fa-wind text-green-300 text-lg mb-2"></i>
-            <p className="text-xs opacity-75">Wind</p>
-            <p className="text-lg font-semibold">{currentWeather.windSpeed} {speedSymbol}</p>
-          </div>
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <i className="fas fa-eye text-purple-300 text-lg mb-2"></i>
-            <p className="text-xs opacity-75">Visibility</p>
-            <p className="text-lg font-semibold">{currentWeather.visibility} {distanceSymbol}</p>
-          </div>
-          <div className="glass-morphism rounded-xl p-4 text-center">
-            <i className="fas fa-thermometer-half text-orange-300 text-lg mb-2"></i>
-            <p className="text-xs opacity-75">Pressure</p>
-            <p className="text-lg font-semibold">{currentWeather.pressure}</p>
-          </div>
 
-        </motion.div>
       </div>
     </div>
   );
