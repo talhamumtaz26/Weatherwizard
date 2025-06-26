@@ -16,6 +16,8 @@ import type { WeatherData } from "@shared/schema";
 export default function Weather() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
   const { location: gpsLocation, loading: locationLoading, error: locationError } = useGeolocation();
   const { 
     temperatureUnits, 
@@ -35,7 +37,40 @@ export default function Weather() {
   // Use manual location if set, otherwise fall back to GPS location
   const location = manualLocation || gpsLocation;
 
-  const { data: weatherData, isLoading: weatherLoading, error: weatherError } = useQuery<WeatherData>({
+  // Pull to refresh functionality
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (window.scrollY === 0 && !isRefreshing) {
+      const touch = e.touches[0];
+      const distance = Math.max(0, touch.clientY - 50);
+      
+      if (distance > 0) {
+        setPullDistance(Math.min(distance, 100));
+        if (distance > 80) {
+          e.preventDefault();
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > 80 && !isRefreshing) {
+      setIsRefreshing(true);
+      refetch().finally(() => {
+        setIsRefreshing(false);
+        setPullDistance(0);
+      });
+    } else {
+      setPullDistance(0);
+    }
+  };
+
+  const { data: weatherData, isLoading: weatherLoading, error: weatherError, refetch } = useQuery<WeatherData>({
     queryKey: ['/api/weather', location?.lat, location?.lon],
     enabled: !!(location?.lat && location?.lon),
   });
@@ -192,7 +227,26 @@ export default function Weather() {
   };
 
   return (
-    <div className={getDynamicBackground()}>
+    <div 
+      className={getDynamicBackground()}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to refresh indicator */}
+      {pullDistance > 0 && (
+        <div 
+          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-white/20 backdrop-blur-sm"
+          style={{ 
+            height: `${Math.min(pullDistance, 80)}px`,
+            transform: `translateY(-${80 - Math.min(pullDistance, 80)}px)` 
+          }}
+        >
+          <div className="text-white text-sm">
+            {pullDistance > 80 ? (isRefreshing ? 'Refreshing...' : 'Release to refresh') : 'Pull to refresh'}
+          </div>
+        </div>
+      )}
       {getWeatherEffects()}
       <WeatherHeader 
         currentWeather={convertedWeatherData.current} 

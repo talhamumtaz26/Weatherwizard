@@ -48,8 +48,8 @@ export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }:
         24-Hour Temperature
       </h2>
       
-      <div className="overflow-x-auto">
-        <div className="flex space-x-4 pb-2">
+      <div className="overflow-x-auto scrollbar-hide touch-pan-x">
+        <div className="flex space-x-4 pb-2" style={{ scrollBehavior: 'smooth' }}>
           {hourlyData.map((hour, index) => (
             <motion.div
               key={index}

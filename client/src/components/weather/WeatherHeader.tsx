@@ -84,7 +84,7 @@ export function WeatherHeader({
               })}
             </p>
             <p className="text-sm opacity-60">
-              {new Date().toLocaleDateString('ar-SA-u-ca-islamic', { 
+              {new Date().toLocaleDateString('en-US-u-ca-islamic', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
