@@ -6,6 +6,7 @@ import { WeatherForecast } from "@/components/weather/WeatherForecast";
 import { LoadingSpinner } from "@/components/weather/LoadingSpinner";
 import { SettingsPanel } from "@/components/weather/SettingsPanel";
 import { SunriseSunset } from "@/components/weather/SunriseSunset";
+import { HourlyTemperature } from "@/components/weather/HourlyTemperature";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useWeatherUnits } from "@/hooks/useTemperatureUnits";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -203,6 +204,10 @@ export default function Weather() {
       />
       
       <div className="max-w-6xl mx-auto px-4 py-6 md:px-6 text-white">
+        <HourlyTemperature 
+          currentWeather={convertedWeatherData.current}
+          temperatureSymbol={getTemperatureSymbol()}
+        />
         <WeatherDetailsGrid 
           currentWeather={convertedWeatherData.current} 
           temperatureSymbol={getTemperatureSymbol()}

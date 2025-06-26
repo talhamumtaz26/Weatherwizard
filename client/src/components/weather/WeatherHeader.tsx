@@ -74,9 +74,17 @@ export function WeatherHeader({
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <p className="text-xl font-medium opacity-90 mb-2">{currentWeather.description}</p>
-            <p className="text-sm opacity-75 mb-1">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
-            <p className="text-xs opacity-60">
+            <p className="text-lg opacity-85 mb-2">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
+            <p className="text-sm opacity-70 mb-1">
               {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+            <p className="text-sm opacity-60">
+              {new Date().toLocaleDateString('ar-SA-u-ca-islamic', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
