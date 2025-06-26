@@ -119,20 +119,20 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       {cards.map((card, index) => (
         <motion.div
           key={card.title}
-          className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/20"
+          className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/20 text-center flex flex-col items-center"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+          <div className="flex items-center justify-center gap-2 mb-4">
             <i className={`${card.icon} text-xl`}></i>
+            <h3 className="text-lg font-semibold text-white text-center">{card.title}</h3>
           </div>
           
-          <div className="mb-4">
-            <div className="text-3xl font-bold text-white">{card.value}</div>
+          <div className="mb-4 flex flex-col items-center">
+            <div className="text-3xl font-bold text-white text-center">{card.value}</div>
             {card.label && (
-              <div className={`text-sm font-medium ${card.colorClass.split(' ')[0]} rounded-full px-2 py-1 inline-block mt-1`}>
+              <div className={`text-sm font-medium ${card.colorClass.split(' ')[0]} rounded-full px-2 py-1 inline-block mt-1 text-center`}>
                 {card.label}
               </div>
             )}

@@ -43,7 +43,7 @@ export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }:
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+      <h2 className="text-xl font-semibold text-white mb-6 flex items-center justify-center">
         <Clock className="text-blue-300 mr-3 h-5 w-5" />
         24-Hour Temperature
       </h2>
@@ -53,20 +53,20 @@ export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }:
           {hourlyData.map((hour, index) => (
             <motion.div
               key={index}
-              className={`flex-shrink-0 text-center p-3 rounded-lg min-w-[80px] ${
+              className={`flex-shrink-0 text-center p-3 rounded-lg min-w-[80px] flex flex-col items-center justify-center ${
                 hour.isNow ? 'bg-white/20 border border-white/30' : 'bg-white/5'
               }`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.3 + index * 0.02 }}
             >
-              <div className="text-xs text-white/70 mb-2">
+              <div className="text-xs text-white/70 mb-2 text-center">
                 {hour.isNow ? 'Now' : hour.time}
               </div>
-              <div className="mb-2">
-                <i className={`${hour.icon} text-lg text-yellow-300`}></i>
+              <div className="mb-2 flex justify-center">
+                <i className={`${hour.icon} text-lg text-yellow-300 text-center`}></i>
               </div>
-              <div className="text-sm font-semibold text-white">
+              <div className="text-sm font-semibold text-white text-center">
                 {hour.temperature}{temperatureSymbol}
               </div>
             </motion.div>

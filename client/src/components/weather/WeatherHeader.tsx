@@ -46,10 +46,10 @@ export function WeatherHeader({
         </div>
 
         {/* Current Weather Display */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
           {/* Current weather icon */}
           <motion.div 
-            className="mb-4"
+            className="mb-4 flex justify-center"
             animate={{ y: [-10, 0, -10] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -58,24 +58,25 @@ export function WeatherHeader({
           
           {/* Temperature */}
           <motion.div 
-            className="mb-2"
+            className="mb-2 flex justify-center items-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <span className="text-6xl md:text-7xl font-light">{currentWeather.temperature}</span>
-            <span className="text-2xl font-light">{temperatureSymbol}</span>
+            <span className="text-6xl md:text-7xl font-light text-center">{currentWeather.temperature}</span>
+            <span className="text-2xl font-light text-center">{temperatureSymbol}</span>
           </motion.div>
           
           {/* Weather Description */}
           <motion.div
+            className="flex flex-col items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <p className="text-xl font-medium opacity-90 mb-2">{currentWeather.description}</p>
-            <p className="text-lg opacity-85 mb-2">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
-            <p className="text-sm opacity-70 mb-1">
+            <p className="text-xl font-medium opacity-90 mb-2 text-center">{currentWeather.description}</p>
+            <p className="text-lg opacity-85 mb-2 text-center">Feels like {currentWeather.feelsLike}{temperatureSymbol}</p>
+            <p className="text-sm opacity-70 mb-1 text-center">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -83,7 +84,7 @@ export function WeatherHeader({
                 day: 'numeric' 
               })}
             </p>
-            <p className="text-sm opacity-60">
+            <p className="text-sm opacity-60 text-center">
               {new Date().toLocaleDateString('en-US-u-ca-islamic', { 
                 weekday: 'long', 
                 year: 'numeric', 

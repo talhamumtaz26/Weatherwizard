@@ -37,7 +37,7 @@ export function SunriseSunset({ currentWeather }: SunriseSunsetProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-bold text-white mb-6">Sun, Moon & Prayer Times</h2>
+      <h2 className="text-xl font-bold text-white mb-6 text-center">Sun, Moon & Prayer Times</h2>
       
       {/* Sun & Moon Section */}
       <div className="grid grid-cols-3 gap-4 mb-6">
