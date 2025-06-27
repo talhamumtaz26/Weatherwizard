@@ -7,8 +7,11 @@ import { LoadingSpinner } from "@/components/weather/LoadingSpinner";
 import { SettingsPanel } from "@/components/weather/SettingsPanel";
 import { SunriseSunset } from "@/components/weather/SunriseSunset";
 import { HourlyTemperature } from "@/components/weather/HourlyTemperature";
+import { RainEffect } from "@/components/weather/RainEffect";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useWeatherUnits } from "@/hooks/useTemperatureUnits";
+import { useTheme } from "@/hooks/useTheme";
+import { useCities } from "@/hooks/useCities";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type { WeatherData } from "@shared/schema";
@@ -19,6 +22,8 @@ export default function Weather() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const { location: gpsLocation, loading: locationLoading, error: locationError } = useGeolocation();
+  const { theme, isDark } = useTheme();
+  const { currentCity, selectCity } = useCities();
   const { 
     temperatureUnits, 
     speedUnits, 
@@ -247,6 +252,15 @@ export default function Weather() {
           </div>
         </div>
       )}
+      
+      {/* Rain Effects */}
+      {weatherData && (
+        <RainEffect 
+          intensity={weatherData.current.rainMm ? Math.min(weatherData.current.rainMm / 10, 1) : 0}
+          isThunder={weatherData.current.description.toLowerCase().includes('thunder') || weatherData.current.description.toLowerCase().includes('storm')}
+        />
+      )}
+      
       {getWeatherEffects()}
       <WeatherHeader 
         currentWeather={convertedWeatherData.current} 

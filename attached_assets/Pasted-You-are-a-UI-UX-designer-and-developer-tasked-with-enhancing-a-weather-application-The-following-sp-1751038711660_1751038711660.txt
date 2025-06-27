@@ -1,0 +1,54 @@
+You are a UI/UX designer and developer tasked with enhancing a weather application. The following specifications need to be implemented:
+
+### User Story:
+1. **Multiple Cities**
+   - Create an interface that allows users to add multiple cities for weather tracking. Ensure that users can view the added cities easily.
+
+2. **Dark Mode**
+   - Integrate a dark mode option in the settings of the app. This should allow users to toggle between light and dark themes seamlessly.
+
+3. **Pull Down to Refresh**
+   - Implement a "pull down to refresh" feature that enables users to manually refresh the weather data displayed on the app.
+
+### Visual Presentation:
+1. **Temperature Display**
+   - Display the temperature at **28 degrees** in bold text, using a **white color**.
+   - Adjust the entire temperature section to be slightly lower on the screen and center it vertically.
+
+2. **Humidity Section**
+   - Remove the dew point line from the humidity section.
+   - Modify the humidity bar to reflect values through percentages instead of other visual representations.
+
+3. **10-Day Forecast**
+   - Include weather icons next to each day in the 10-day forecast to represent the expected weather conditions accurately.
+
+4. **Rain Indicator**
+   - Shorten the visual indicator for moderate or heavy rain events, ensuring it includes an icon depicting thunder when applicable.
+
+5. **Date Format**
+   - Make sure the app does not show the date in the Islamic calendar format. Stick to standard Gregorian date formatting.
+
+6. **Temperature Headline**
+   - Remove the headline for the 24-hour temperature display to streamline the UI.
+
+### Design Aesthetics:
+1. **Background Design**
+   - Change the background of the UI to have a glass-like box aesthetic, giving it a modern and sleek appearance.
+
+2. **Rain Visual Effects**
+   - If rain is detected, incorporate dynamic visual effects to illustrate rain on the screen, adjusting according to weather conditions in real-time.
+
+### Implementation Checklist:
+- [ ] Add functionality for multiple city inputs.
+- [ ] Implement dark mode toggle in settings.
+- [ ] Create a pull-down refresh feature.
+- [ ] Style temperature display as specified.
+- [ ] Adjust the humidity section as detailed.
+- [ ] Integrate weather icons in the 10-day forecast.
+- [ ] Shorten the rain indicator line.
+- [ ] Verify the date display format.
+- [ ] Remove temperature headline.
+- [ ] Redesign UI for a glass box appearance.
+- [ ] Implement rain visual effects.
+
+Use this outline to guide your development process, ensuring each feature is well-integrated and user-friendly.

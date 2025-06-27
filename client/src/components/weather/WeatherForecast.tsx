@@ -10,7 +10,7 @@ interface WeatherForecastProps {
 export function WeatherForecast({ forecast, temperatureSymbol = "°F" }: WeatherForecastProps) {
   return (
     <motion.div 
-      className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-sm mb-8 border border-white/20"
+      className="glass-morphism rounded-2xl p-6 shadow-lg mb-8 backdrop-blur-md border border-white/30 dark:border-white/20"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.6 }}

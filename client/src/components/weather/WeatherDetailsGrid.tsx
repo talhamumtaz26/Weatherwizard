@@ -104,14 +104,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       colorClass: "text-blue-600 bg-blue-100",
       description: (currentWeather.rainMm || 0) > 0 ? "Precipitation detected" : "No precipitation expected",
     },
-    {
-      title: "Dew Point",
-      icon: "fas fa-droplet text-cyan-500",
-      value: `${currentWeather.dewPoint || Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}${temperatureSymbol}`,
-      label: "",
-      colorClass: "text-cyan-600 bg-cyan-100",
-      description: "Comfortable level",
-    },
+
   ];
 
   return (
@@ -119,7 +112,7 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       {cards.map((card, index) => (
         <motion.div
           key={card.title}
-          className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/20 text-center flex flex-col items-center"
+          className="glass-morphism rounded-2xl p-6 shadow-lg text-center flex flex-col items-center backdrop-blur-md border border-white/30 dark:border-white/20"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}

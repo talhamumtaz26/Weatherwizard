@@ -58,13 +58,13 @@ export function WeatherHeader({
           
           {/* Temperature */}
           <motion.div 
-            className="mb-2 flex justify-center items-center"
+            className="mb-6 flex justify-center items-center mt-8"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <span className="text-6xl md:text-7xl font-light text-center">{currentWeather.temperature}</span>
-            <span className="text-2xl font-light text-center">{temperatureSymbol}</span>
+            <span className="text-8xl md:text-9xl font-bold text-white text-center">28</span>
+            <span className="text-3xl font-bold text-white text-center">{temperatureSymbol}</span>
           </motion.div>
           
           {/* Weather Description */}
@@ -84,14 +84,7 @@ export function WeatherHeader({
                 day: 'numeric' 
               })}
             </p>
-            <p className="text-sm opacity-60 text-center">
-              {new Date().toLocaleDateString('en-US-u-ca-islamic', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </p>
+
           </motion.div>
         </div>
 

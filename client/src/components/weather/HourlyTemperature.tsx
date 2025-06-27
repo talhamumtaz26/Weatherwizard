@@ -38,15 +38,12 @@ export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }:
 
   return (
     <motion.div
-      className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-sm mb-8 border border-white/20"
+      className="glass-morphism rounded-2xl p-6 shadow-lg mb-8 backdrop-blur-md border border-white/30 dark:border-white/20"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h2 className="text-xl font-semibold text-white mb-6 flex items-center justify-center">
-        <Clock className="text-blue-300 mr-3 h-5 w-5" />
-        24-Hour Temperature
-      </h2>
+
       
       <div className="overflow-x-auto scrollbar-hide touch-pan-x">
         <div className="flex space-x-4 pb-2" style={{ scrollBehavior: 'smooth' }}>

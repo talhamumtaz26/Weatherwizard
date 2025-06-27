@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, MapPin, Thermometer, Plus, Wind, Eye } from "lucide-react";
+import { X, Search, MapPin, Thermometer, Plus, Wind, Eye, Moon, Sun, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/useTheme";
+import { useCities, type SavedCity } from "@/hooks/useCities";
 
 import type { TemperatureUnit, SpeedUnit, DistanceUnit } from "@/hooks/useTemperatureUnits";
 
@@ -39,6 +41,8 @@ export function SettingsPanel({
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { theme, toggleTheme, isDark } = useTheme();
+  const { cities, addCity, removeCity, selectCity } = useCities();
 
   const searchLocationMutation = useMutation({
     mutationFn: async (city: string) => {
@@ -46,11 +50,22 @@ export function SettingsPanel({
       return response.json();
     },
     onSuccess: (locationData) => {
+      // Add city to saved cities list
+      const newCity = addCity({
+        name: locationData.city,
+        lat: locationData.lat,
+        lon: locationData.lon,
+        country: locationData.country,
+      });
+      
+      // Select the new city and load its weather
+      selectCity(newCity);
       onLocationSelect(locationData.lat, locationData.lon, locationData.city);
       setSearchCity("");
+      
       toast({
-        title: "Location Updated",
-        description: `Weather updated for ${locationData.city}, ${locationData.country}`,
+        title: "City Added",
+        description: `${locationData.city} has been added to your saved cities`,
       });
     },
     onError: (error) => {
@@ -121,16 +136,112 @@ export function SettingsPanel({
             <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Settings</h2>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="hover:bg-gray-100 rounded-full"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
                 >
                   <X className="h-5 w-5" />
                 </Button>
               </div>
+
+              {/* Dark Mode Toggle */}
+              <Card className="p-4 mb-6 glass-morphism border border-white/30 dark:border-white/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    {isDark ? <Moon className="h-5 w-5 text-purple-500" /> : <Sun className="h-5 w-5 text-yellow-500" />}
+                    <div>
+                      <Label className="text-sm font-medium text-white">Dark Mode</Label>
+                      <p className="text-xs text-white/70">
+                        Toggle between light and dark themes
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={isDark}
+                    onCheckedChange={toggleTheme}
+                  />
+                </div>
+              </Card>
+
+              {/* Multiple Cities */}
+              <Card className="p-4 mb-6 glass-morphism border border-white/30 dark:border-white/20">
+                <div className="mb-4">
+                  <Label className="text-sm font-medium text-white flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Saved Cities
+                  </Label>
+                  <p className="text-xs text-white/70 mt-1">
+                    Add cities for quick weather access
+                  </p>
+                </div>
+
+                {/* City Search */}
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchCity.trim()) {
+                    searchLocationMutation.mutate(searchCity.trim());
+                  }
+                }} className="mb-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Search for a city..."
+                      value={searchCity}
+                      onChange={(e) => setSearchCity(e.target.value)}
+                      className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/50"
+                    />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={searchLocationMutation.isPending || !searchCity.trim()}
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      {searchLocationMutation.isPending ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </form>
+                
+                {cities.length > 0 && (
+                  <div className="space-y-2 mb-4">
+                    {cities.map((city) => (
+                      <div key={city.id} className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">{city.name}</p>
+                          <p className="text-xs text-white/60">{city.country}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              selectCity(city);
+                              onLocationSelect(city.lat, city.lon, city.name);
+                            }}
+                            className="text-white hover:bg-white/20"
+                          >
+                            Select
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeCity(city.id)}
+                            className="text-red-400 hover:bg-red-500/20"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
 
               {/* Temperature Units */}
               <Card className="p-4 mb-6">
