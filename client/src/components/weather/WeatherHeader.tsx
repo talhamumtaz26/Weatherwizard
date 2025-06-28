@@ -80,7 +80,7 @@ export function WeatherHeader({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <span className="text-8xl md:text-9xl font-bold text-white text-center">28</span>
+            <span className="text-8xl md:text-9xl font-bold text-white text-center">{Math.round(currentWeather.temperature)}</span>
             <span className="text-3xl font-bold text-white text-center">{temperatureSymbol}</span>
           </motion.div>
           

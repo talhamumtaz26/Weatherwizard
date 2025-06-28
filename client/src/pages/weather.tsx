@@ -39,8 +39,8 @@ export default function Weather() {
     getDistanceSymbol
   } = useWeatherUnits();
   
-  // Use manual location if set, otherwise fall back to GPS location
-  const location = manualLocation || gpsLocation;
+  // Use manual location if set, otherwise fall back to GPS location, or default to Karachi
+  const location = manualLocation || gpsLocation || { lat: 24.8607, lon: 67.0011 };
 
   // Pull to refresh functionality
   const handleTouchStart = (e: React.TouchEvent) => {
