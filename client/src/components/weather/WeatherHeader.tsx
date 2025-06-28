@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Settings, Sunrise, Sunset } from "lucide-react";
+import { Settings, Sunrise, Sunset, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CurrentWeather } from "@shared/schema";
 
@@ -7,6 +7,8 @@ interface WeatherHeaderProps {
   currentWeather: CurrentWeather;
   onSettingsClick?: () => void;
   onLocationClick?: () => void;
+  onRefreshLocation?: () => void;
+  isRefreshingLocation?: boolean;
   temperatureSymbol?: string;
   speedSymbol?: string;
   distanceSymbol?: string;
@@ -15,7 +17,9 @@ interface WeatherHeaderProps {
 export function WeatherHeader({ 
   currentWeather, 
   onSettingsClick, 
-  onLocationClick, 
+  onLocationClick,
+  onRefreshLocation,
+  isRefreshingLocation = false,
   temperatureSymbol = "°F",
   speedSymbol = "mph",
   distanceSymbol = "mi"
@@ -35,14 +39,27 @@ export function WeatherHeader({
             <i className="fas fa-map-marker-alt text-lg"></i>
             <span className="text-lg font-medium">{currentWeather.location}</span>
           </motion.div>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={onSettingsClick}
-            className="p-2 rounded-full glass-morphism hover:bg-white/20 transition-colors text-white hover:text-white"
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {onRefreshLocation && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={onRefreshLocation}
+                disabled={isRefreshingLocation}
+                className="p-2 rounded-full glass-morphism hover:bg-white/20 transition-colors text-white hover:text-white"
+              >
+                <RefreshCw className={`h-5 w-5 ${isRefreshingLocation ? 'animate-spin' : ''}`} />
+              </Button>
+            )}
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={onSettingsClick}
+              className="p-2 rounded-full glass-morphism hover:bg-white/20 transition-colors text-white hover:text-white"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Current Weather Display */}

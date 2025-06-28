@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface GeolocationState {
   location: { lat: number; lon: number } | null;
   loading: boolean;
-  error: Error | null;
+  error: string | null;
 }
 
 export function useGeolocation() {
@@ -13,15 +13,17 @@ export function useGeolocation() {
     error: null,
   });
 
-  useEffect(() => {
+  const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setState({
         location: null,
         loading: false,
-        error: new Error('Geolocation is not supported by this browser'),
+        error: 'Geolocation is not supported by this browser',
       });
       return;
     }
+
+    setState(prev => ({ ...prev, loading: true, error: null }));
 
     const handleSuccess = (position: GeolocationPosition) => {
       setState({
@@ -39,7 +41,7 @@ export function useGeolocation() {
       
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          errorMessage = 'Location access denied. Please enable location services and refresh the page.';
+          errorMessage = 'Location access denied. Please enable location services and try again.';
           break;
         case error.POSITION_UNAVAILABLE:
           errorMessage = 'Location information is unavailable. Please check your internet connection.';
@@ -52,16 +54,25 @@ export function useGeolocation() {
       setState({
         location: null,
         loading: false,
-        error: new Error(errorMessage),
+        error: errorMessage,
       });
     };
 
+    // Use fresh location data, not cached
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 300000, // 5 minutes
+      timeout: 15000,
+      maximumAge: 0, // Always get fresh location
     });
   }, []);
 
-  return state;
+  useEffect(() => {
+    getCurrentLocation();
+  }, [getCurrentLocation]);
+
+  const refreshLocation = useCallback(() => {
+    getCurrentLocation();
+  }, [getCurrentLocation]);
+
+  return { ...state, refreshLocation };
 }

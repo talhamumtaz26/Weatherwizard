@@ -21,7 +21,7 @@ export default function Weather() {
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
-  const { location: gpsLocation, loading: locationLoading, error: locationError } = useGeolocation();
+  const { location: gpsLocation, loading: locationLoading, error: locationError, refreshLocation } = useGeolocation();
   const { theme, isDark } = useTheme();
   const { currentCity, selectCity } = useCities();
   const { 
@@ -131,8 +131,23 @@ export default function Weather() {
       <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4">
         <Alert className="max-w-md bg-white">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            No weather data available. Please ensure location services are enabled.
+          <AlertDescription className="space-y-3">
+            <p>No weather data available. Please ensure location services are enabled.</p>
+            {locationError && (
+              <div className="space-y-2">
+                <p className="text-sm text-red-600">{locationError}</p>
+                <button
+                  onClick={refreshLocation}
+                  disabled={locationLoading}
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {locationLoading ? 'Getting Location...' : 'Try Again'}
+                </button>
+              </div>
+            )}
+            {!locationError && locationLoading && (
+              <p className="text-sm text-blue-600">Getting your location...</p>
+            )}
           </AlertDescription>
         </Alert>
       </div>
@@ -266,6 +281,8 @@ export default function Weather() {
         currentWeather={convertedWeatherData.current} 
         onSettingsClick={() => setIsSettingsOpen(true)}
         onLocationClick={handleLocationClick}
+        onRefreshLocation={refreshLocation}
+        isRefreshingLocation={locationLoading}
         temperatureSymbol={getTemperatureSymbol()}
         speedSymbol={getSpeedSymbol()}
         distanceSymbol={getDistanceSymbol()}
