@@ -40,6 +40,7 @@ export default function Weather() {
   } = useWeatherUnits();
   
   // Use manual location if set, otherwise fall back to GPS location, or default to Karachi
+  // Always ensure we have a valid location for the weather API
   const location = manualLocation || gpsLocation || { lat: 24.8607, lon: 67.0011 };
 
   // Pull to refresh functionality
@@ -78,10 +79,14 @@ export default function Weather() {
   const { data: weatherData, isLoading: weatherLoading, error: weatherError, refetch } = useQuery<WeatherData>({
     queryKey: ['/api/weather', location?.lat, location?.lon],
     enabled: !!(location?.lat && location?.lon),
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  const isLoading = locationLoading || weatherLoading;
-  const error = locationError || weatherError;
+  // Only show location loading if we don't have any location yet
+  const isLoading = (locationLoading && !location) || weatherLoading;
+  // Only show location error if we can't get weather data
+  const error = !location ? locationError : weatherError;
 
   const handleLocationSelect = (lat: number, lon: number, city: string) => {
     setManualLocation({ lat, lon });
@@ -132,17 +137,25 @@ export default function Weather() {
         <Alert className="max-w-md bg-white">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="space-y-3">
-            <p>No weather data available. Please ensure location services are enabled.</p>
+            <p>Loading weather data...</p>
             {locationError && (
               <div className="space-y-2">
                 <p className="text-sm text-red-600">{locationError}</p>
-                <button
-                  onClick={refreshLocation}
-                  disabled={locationLoading}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {locationLoading ? 'Getting Location...' : 'Try Again'}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={refreshLocation}
+                    disabled={locationLoading}
+                    className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                  >
+                    {locationLoading ? 'Getting Location...' : 'Use My Location'}
+                  </button>
+                  <button
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="flex-1 px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                  >
+                    Search City
+                  </button>
+                </div>
               </div>
             )}
             {!locationError && locationLoading && (
@@ -277,6 +290,17 @@ export default function Weather() {
       )}
       
       {getWeatherEffects()}
+      
+      {/* Location notification */}
+      {locationError && !manualLocation && (
+        <div className="fixed top-4 left-4 right-4 z-30 flex justify-center">
+          <div className="bg-orange-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+            <i className="fas fa-map-marker-alt"></i>
+            Using default location. Click settings to search for your city.
+          </div>
+        </div>
+      )}
+      
       <WeatherHeader 
         currentWeather={convertedWeatherData.current} 
         onSettingsClick={() => setIsSettingsOpen(true)}

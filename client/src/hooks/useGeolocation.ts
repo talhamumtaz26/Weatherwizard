@@ -26,6 +26,7 @@ export function useGeolocation() {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     const handleSuccess = (position: GeolocationPosition) => {
+      console.log('Location detected:', position.coords.latitude, position.coords.longitude);
       setState({
         location: {
           lat: position.coords.latitude,
@@ -37,17 +38,18 @@ export function useGeolocation() {
     };
 
     const handleError = (error: GeolocationPositionError) => {
+      console.log('Geolocation error:', error.code, error.message);
       let errorMessage = 'Unable to retrieve location';
       
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          errorMessage = 'Location access denied. Please enable location services and try again.';
+          errorMessage = 'Location access denied. Please enable location in your browser settings.';
           break;
         case error.POSITION_UNAVAILABLE:
-          errorMessage = 'Location information is unavailable. Please check your internet connection.';
+          errorMessage = 'Location information unavailable. Using default location.';
           break;
         case error.TIMEOUT:
-          errorMessage = 'Location request timed out. Please try again.';
+          errorMessage = 'Location request timed out. Using default location.';
           break;
       }
 
@@ -58,11 +60,11 @@ export function useGeolocation() {
       });
     };
 
-    // Use fresh location data, not cached
+    // Use fresh location data with more permissive settings
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0, // Always get fresh location
+      enableHighAccuracy: false, // Less strict for better compatibility
+      timeout: 10000,
+      maximumAge: 60000, // Allow 1 minute old location
     });
   }, []);
 
