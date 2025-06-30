@@ -9,7 +9,7 @@ interface WeatherDetailsGridProps {
   distanceSymbol?: string;
 }
 
-export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", speedSymbol = "mph", distanceSymbol = "mi" }: WeatherDetailsGridProps) {
+export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°C", speedSymbol = "km/h", distanceSymbol = "km" }: WeatherDetailsGridProps) {
   const getUVColor = (uvIndex: number) => {
     if (uvIndex <= 2) return "text-green-600 bg-green-100";
     if (uvIndex <= 5) return "text-yellow-600 bg-yellow-100";
@@ -68,7 +68,9 @@ export function WeatherDetailsGrid({ currentWeather, temperatureSymbol = "°F", 
       label: "Comfortable",
       colorClass: "text-blue-600 bg-blue-100",
       progressWidth: currentWeather.humidity,
-      description: `The dew point is ${currentWeather.dewPoint || Math.round(currentWeather.temperature - ((100 - currentWeather.humidity) / 5))}${temperatureSymbol} right now`,
+      description: currentWeather.humidity < 30 ? "Very dry air" :
+                   currentWeather.humidity < 60 ? "Comfortable humidity" :
+                   currentWeather.humidity < 80 ? "Getting humid" : "Very humid",
     },
     {
       title: "Pressure",

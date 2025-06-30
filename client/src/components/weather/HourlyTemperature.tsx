@@ -7,7 +7,7 @@ interface HourlyTemperatureProps {
   temperatureSymbol?: string;
 }
 
-export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }: HourlyTemperatureProps) {
+export function HourlyTemperature({ currentWeather, temperatureSymbol = "°C" }: HourlyTemperatureProps) {
   // Generate hourly data for next 24 hours (mock data based on current weather)
   const generateHourlyData = () => {
     const hourlyData = [];
@@ -43,7 +43,10 @@ export function HourlyTemperature({ currentWeather, temperatureSymbol = "°F" }:
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-
+      <div className="flex items-center gap-2 mb-4">
+        <Clock className="h-5 w-5 text-white/80" />
+        <h3 className="text-lg font-semibold text-white">24-Hour Forecast</h3>
+      </div>
       
       <div className="overflow-x-auto scrollbar-hide touch-pan-x">
         <div className="flex space-x-4 pb-2" style={{ scrollBehavior: 'smooth' }}>

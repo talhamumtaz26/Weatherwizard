@@ -8,6 +8,9 @@ import { SettingsPanel } from "@/components/weather/SettingsPanel";
 import { SunriseSunset } from "@/components/weather/SunriseSunset";
 import { HourlyTemperature } from "@/components/weather/HourlyTemperature";
 import { RainEffect } from "@/components/weather/RainEffect";
+import { DewPoint } from "@/components/weather/DewPoint";
+import { IslamicDate } from "@/components/weather/IslamicDate";
+import { PrayerTimes } from "@/components/weather/PrayerTimes";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useWeatherUnits } from "@/hooks/useTemperatureUnits";
 import { useTheme } from "@/hooks/useTheme";
@@ -281,10 +284,16 @@ export default function Weather() {
         </div>
       )}
       
-      {/* Rain Effects */}
+      {/* Rain Effects - Only show for actual rain/storm conditions */}
       {weatherData && (
+        weatherData.current.description.toLowerCase().includes('rain') ||
+        weatherData.current.description.toLowerCase().includes('storm') ||
+        weatherData.current.description.toLowerCase().includes('thunder') ||
+        weatherData.current.description.toLowerCase().includes('drizzle') ||
+        (weatherData.current.rainMm && weatherData.current.rainMm > 0)
+      ) && (
         <RainEffect 
-          intensity={weatherData.current.rainMm ? Math.min(weatherData.current.rainMm / 10, 1) : 0}
+          intensity={weatherData.current.rainMm ? Math.min(weatherData.current.rainMm / 10, 1) : 0.3}
           isThunder={weatherData.current.description.toLowerCase().includes('thunder') || weatherData.current.description.toLowerCase().includes('storm')}
         />
       )}
@@ -312,6 +321,11 @@ export default function Weather() {
         distanceSymbol={getDistanceSymbol()}
       />
       
+      {/* Islamic Date */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <IslamicDate className="flex justify-center" />
+      </div>
+      
       <div className="max-w-6xl mx-auto px-4 py-6 md:px-6 text-white">
         <HourlyTemperature 
           currentWeather={convertedWeatherData.current}
@@ -323,6 +337,16 @@ export default function Weather() {
           speedSymbol={getSpeedSymbol()}
           distanceSymbol={getDistanceSymbol()}
         />
+        
+        {/* Dew Point Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <DewPoint 
+            currentWeather={convertedWeatherData.current}
+            temperatureSymbol={getTemperatureSymbol()}
+          />
+          <PrayerTimes location={location} />
+        </div>
+        
         <WeatherForecast 
           forecast={convertedWeatherData.forecast} 
           temperatureSymbol={getTemperatureSymbol()}

@@ -107,6 +107,16 @@ This is a full-stack weather application built with React and Express.js that pr
 ## Changelog
 ```
 Changelog:
+- June 30, 2025. Major feature enhancements:
+  * Added dew point section back with dedicated component
+  * Fixed temperature/visual mismatch - mist conditions no longer show rain effects
+  * Added Islamic date display without day name
+  * Fixed hourly forecast temperature display and functionality
+  * Added Namaz/Prayer times section with countdown timers
+  * Redesigned 10-day forecast to match user's design reference
+  * Changed default units to Celsius, km/h, and km
+  * Fixed dark mode text visibility issues in settings panel
+  * Improved weather effects logic to only show rain for actual precipitation
 - June 26, 2025. Initial setup
 ```
 

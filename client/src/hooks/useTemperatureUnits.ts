@@ -5,9 +5,9 @@ export type SpeedUnit = 'mph' | 'kmh';
 export type DistanceUnit = 'miles' | 'km';
 
 export function useWeatherUnits() {
-  const [temperatureUnits, setTemperatureUnits] = useState<TemperatureUnit>('fahrenheit');
-  const [speedUnits, setSpeedUnits] = useState<SpeedUnit>('mph');
-  const [distanceUnits, setDistanceUnits] = useState<DistanceUnit>('miles');
+  const [temperatureUnits, setTemperatureUnits] = useState<TemperatureUnit>('celsius');
+  const [speedUnits, setSpeedUnits] = useState<SpeedUnit>('kmh');
+  const [distanceUnits, setDistanceUnits] = useState<DistanceUnit>('km');
 
   useEffect(() => {
     const savedTempUnits = localStorage.getItem('weatherapp_temperature_units') as TemperatureUnit;

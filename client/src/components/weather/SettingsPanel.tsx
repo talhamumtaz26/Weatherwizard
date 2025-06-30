@@ -131,7 +131,7 @@ export function SettingsPanel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-y-auto"
           >
             <div className="p-6">
               {/* Header */}
@@ -244,26 +244,26 @@ export function SettingsPanel({
               </Card>
 
               {/* Temperature Units */}
-              <Card className="p-4 mb-6">
+              <Card className="p-4 mb-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Thermometer className="h-5 w-5 text-blue-500" />
                     <div>
-                      <Label className="text-sm font-medium">Temperature Units</Label>
-                      <p className="text-xs text-gray-500">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">Temperature Units</Label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         Choose between Fahrenheit and Celsius
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-sm ${temperatureUnits === "fahrenheit" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${temperatureUnits === "fahrenheit" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       °F
                     </span>
                     <Switch
                       checked={temperatureUnits === "celsius"}
                       onCheckedChange={handleTemperatureUnitsToggle}
                     />
-                    <span className={`text-sm ${temperatureUnits === "celsius" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${temperatureUnits === "celsius" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       °C
                     </span>
                   </div>
@@ -271,26 +271,26 @@ export function SettingsPanel({
               </Card>
 
               {/* Speed Units */}
-              <Card className="p-4 mb-6">
+              <Card className="p-4 mb-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Wind className="h-5 w-5 text-green-500" />
                     <div>
-                      <Label className="text-sm font-medium">Speed Units</Label>
-                      <p className="text-xs text-gray-500">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">Speed Units</Label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         Choose between mph and km/h
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-sm ${speedUnits === "mph" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${speedUnits === "mph" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       mph
                     </span>
                     <Switch
                       checked={speedUnits === "kmh"}
                       onCheckedChange={handleSpeedUnitsToggle}
                     />
-                    <span className={`text-sm ${speedUnits === "kmh" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${speedUnits === "kmh" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       km/h
                     </span>
                   </div>
@@ -298,26 +298,26 @@ export function SettingsPanel({
               </Card>
 
               {/* Distance Units */}
-              <Card className="p-4 mb-6">
+              <Card className="p-4 mb-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Eye className="h-5 w-5 text-purple-500" />
                     <div>
-                      <Label className="text-sm font-medium">Distance Units</Label>
-                      <p className="text-xs text-gray-500">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">Distance Units</Label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         Choose between miles and kilometers
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-sm ${distanceUnits === "miles" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${distanceUnits === "miles" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       mi
                     </span>
                     <Switch
                       checked={distanceUnits === "km"}
                       onCheckedChange={handleDistanceUnitsToggle}
                     />
-                    <span className={`text-sm ${distanceUnits === "km" ? "font-medium" : "text-gray-400"}`}>
+                    <span className={`text-sm ${distanceUnits === "km" ? "font-medium text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>
                       km
                     </span>
                   </div>
