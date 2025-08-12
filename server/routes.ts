@@ -107,18 +107,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Fetch current weather and forecast from WeatherAPI (includes everything we need)
-      const weatherResponse = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=10&aqi=yes&alerts=no`
-      );
+      let weatherResponse;
+      try {
+        weatherResponse = await fetch(
+          `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=10&aqi=yes&alerts=no`
+        );
+      } catch (fetchError) {
+        console.error('Failed to fetch from WeatherAPI:', fetchError);
+        return res.status(500).json({ 
+          message: "Failed to connect to weather service. Please check your internet connection." 
+        });
+      }
 
       if (!weatherResponse.ok) {
-        const errorData = await weatherResponse.json().catch(() => ({}));
+        // Try to parse error response as JSON, but handle case where it might be HTML
+        let errorData;
+        try {
+          errorData = await weatherResponse.json();
+        } catch (parseError) {
+          // If parsing fails, it's likely HTML, so create a generic error message
+          errorData = { error: { message: `Weather API returned status ${weatherResponse.status}` } };
+        }
+        
         return res.status(weatherResponse.status).json({ 
           message: `Weather API error: ${errorData.error?.message || 'Failed to fetch weather data'}` 
         });
       }
 
-      const weatherData = await weatherResponse.json();
+      let weatherData;
+      try {
+        weatherData = await weatherResponse.json();
+      } catch (parseError) {
+        console.error('Failed to parse WeatherAPI response as JSON:', parseError);
+        return res.status(500).json({ 
+          message: "Invalid response from weather service. Please try again later." 
+        });
+      }
       const current = weatherData.current;
       const location = weatherData.location;
       const forecast = weatherData.forecast.forecastday;
@@ -200,13 +224,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const response = await fetch(
-        `https://api.weatherapi.com/v1/search.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city as string)}`
-      );
+      let response;
+      try {
+        response = await fetch(
+          `https://api.weatherapi.com/v1/search.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city as string)}`
+        );
+      } catch (fetchError) {
+        console.error('Failed to fetch from WeatherAPI:', fetchError);
+        return res.status(500).json({ 
+          message: "Failed to connect to location service. Please check your internet connection." 
+        });
+      }
 
       if (!response.ok) {
+        // Try to parse error response as JSON, but handle case where it might be HTML
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          // If parsing fails, it's likely HTML, so create a generic error message
+          errorData = { error: { message: `Location API returned status ${response.status}` } };
+        }
+        
         return res.status(response.status).json({ 
-          message: "Failed to fetch location data" 
+          message: `Location API error: ${errorData.error?.message || 'Failed to fetch location data'}` 
         });
       }
 

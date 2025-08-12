@@ -1,5 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Use environment variable for API base URL, fallback to localhost in development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -12,7 +15,10 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Prepend API base URL if the URL is relative (doesn't start with http)
+  const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+  
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -46,7 +52,10 @@ export const getQueryFn: <T>(options: {
       }
     }
 
-    const res = await fetch(url, {
+    // Prepend API base URL if the URL is relative (doesn't start with http)
+    const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 

@@ -80,7 +80,18 @@ export default function Weather() {
   };
 
   const { data: weatherData, isLoading: weatherLoading, error: weatherError, refetch } = useQuery<WeatherData>({
-    queryKey: ['/api/weather', location?.lat, location?.lon],
+    queryKey: ['weather', location?.lat, location?.lon],
+    queryFn: async () => {
+      if (!location?.lat || !location?.lon) {
+        throw new Error("Location not available");
+      }
+      const response = await fetch(`/api/weather?lat=${location.lat}&lon=${location.lon}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to fetch weather data' }));
+        throw new Error(errorData.message);
+      }
+      return response.json();
+    },
     enabled: !!(location?.lat && location?.lon),
     retry: 3,
     retryDelay: 1000,
