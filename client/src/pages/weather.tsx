@@ -85,7 +85,8 @@ export default function Weather() {
       if (!location?.lat || !location?.lon) {
         throw new Error("Location not available");
       }
-      const response = await fetch(`/api/weather?lat=${location.lat}&lon=${location.lon}`);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/weather?lat=${location.lat}&lon=${location.lon}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Failed to fetch weather data' }));
         throw new Error(errorData.message);
