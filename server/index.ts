@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { serveStatic, log } from "./vite";
+import { log } from "./vite";
 
 const app = express();
 app.use(express.json());
@@ -38,8 +38,8 @@ app.use((req, res, next) => {
 
 registerRoutes(app);
 
-// Serve static files (ensure 'serveStatic' is correctly implemented in './vite')
-app.use(serveStatic);
+// On Vercel, static files are served by the platform based on the vercel.json configuration.
+// The serverless function only needs to handle the API routes.
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
