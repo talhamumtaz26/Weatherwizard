@@ -36,25 +36,15 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+// Serve static files (ensure 'serveStatic' is correctly implemented in './vite')
+app.use(serveStatic);
 
-    res.status(status).json({ message });
-    throw err;
-  });
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  log(`Error: ${err.message || err}`);
+  res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
+});
 
-  // In production, we'll serve the static files from the `dist/public` directory
-  serveStatic(app);
-
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen(port, "0.0.0.0", () => {
-    log(`Server running at http://localhost:${port} and on your network at http://192.168.18.1:${port}`);
-  });
-})();
+export default app;
